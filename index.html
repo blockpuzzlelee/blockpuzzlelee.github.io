@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>아빠의 블록 퍼즐 - 무료 블록 맞추기 게임</title>
+  <meta name="description" content="아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임. 조각을 탭해서 놓고, 줄을 완성해 지우세요. 언제든 천천히 즐길 수 있어요.">
+  <link rel="canonical" href="https://blockpuzzlelee.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="아빠의 블록 퍼즐 - 무료 블록 맞추기 게임">
+  <meta property="og:description" content="아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임. 조각을 탭해서 놓고, 줄을 완성해 지우세요.">
+  <meta property="og:url" content="https://blockpuzzlelee.github.io/">
+  <meta property="og:site_name" content="아빠의 블록 퍼즐">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:image" content="https://blockpuzzlelee.github.io/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="아빠의 블록 퍼즐 로고">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="아빠의 블록 퍼즐 - 무료 블록 맞추기 게임">
+  <meta name="twitter:description" content="아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임입니다.">
+  <meta name="twitter:image" content="https://blockpuzzlelee.github.io/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "아빠의 블록 퍼즐",
+    "url": "https://blockpuzzlelee.github.io/",
+    "description": "아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임입니다.",
+    "inLanguage": "ko"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "아빠의 블록 퍼즐",
+    "url": "https://blockpuzzlelee.github.io/",
+    "description": "아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임입니다.",
+    "inLanguage": "ko",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "KRW"
+    },
+    "featureList": [
+      "큰 글씨와 넉넉한 버튼",
+      "탭으로 조각 놓기",
+      "줄 지우기 콤보",
+      "최고 점수 자동 기록",
+      "모바일 한 화면 배치"
+    ]
+  }
+  </script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FFFFFF;
+  --surface:#FFFFFF;
+  --surface-raised:#F3F4F6;
+  --border:#374151;
+  --border-thin:#9CA3AF;
+  --border-thick:#1F2937;
+  --primary:#2563EB;
+  --primary-hover:#1D4ED8;
+  --primary-light:#DBEAFE;
+  --primary-ring:rgba(37,99,235,0.35);
+  --error:#DC2626;
+  --error-bg:#FEE2E2;
+  --error-ring:rgba(220,38,38,0.30);
+  --success:#059669;
+  --success-bg:#D1FAE5;
+  --warning:#D97706;
+  --warning-bg:#FEF3C7;
+  --text:#111827;
+  --text-secondary:#374151;
+  --text-muted:#6B7280;
+
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-8:32px;
+  --space-10:40px;
+
+  --font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕',sans-serif;
+  --text-xs:13px;
+  --text-sm:15px;
+  --text-base:18px;
+  --text-lg:22px;
+  --text-xl:26px;
+  --text-2xl:30px;
+  --text-3xl:38px;
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+  --weight-extrabold:800;
+  --line-height:1.6;
+
+  --touch-min:56px;
+  --cell-size:clamp(30px,calc((100vw - 96px) / 8),58px);
+  --cell-gap:4px;
+  --board-border:3px;
+  --btn-radius:12px;
+  --radius:12px;
+  --radius-sm:8px;
+  --radius-lg:20px;
+
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.10);
+  --shadow-md:0 2px 8px rgba(0,0,0,0.12);
+  --shadow-lg:0 4px 16px rgba(0,0,0,0.14);
+
+  --transition-fast:150ms ease;
+  --transition-base:200ms ease;
+}
+html{
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-text-size-adjust:100%;
+}
+body{
+  font-family:var(--font-family);
+  background:var(--bg);
+  color:var(--text);
+  height:100dvh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+  font-size:var(--text-base);
+  line-height:var(--line-height);
+  font-weight:var(--weight-regular);
+}
+
+.container{
+  width:100%;
+  max-width:460px;
+  margin:0 auto;
+  padding:0 var(--space-4);
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  min-height:0;
+}
+
+/* ═══════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════ */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-3);
+  padding:var(--space-3) 0 var(--space-2);
+}
+.logo{
+  font-size:clamp(18px,5vw,24px);
+  font-weight:var(--weight-extrabold);
+  color:var(--text);
+  white-space:nowrap;
+  line-height:1.2;
+}
+.header-actions{
+  display:flex;
+  gap:var(--space-2);
+  flex-shrink:0;
+}
+.header-btn{
+  min-height:44px;
+  padding:var(--space-2) var(--space-4);
+  border-radius:var(--btn-radius);
+  border:2px solid var(--border);
+  background:var(--surface);
+  font-size:var(--text-base);
+  font-weight:var(--weight-bold);
+  font-family:var(--font-family);
+  color:var(--text);
+  cursor:pointer;
+  transition:all var(--transition-fast);
+  -webkit-tap-highlight-color:transparent;
+}
+.header-btn:active{
+  background:var(--surface-raised);
+  transform:scale(0.96);
+}
+
+/* ═══════════════════════════════════════
+   SCORE BAR
+   ═══════════════════════════════════════ */
+.score-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-3);
+  padding:var(--space-2) 0 var(--space-3);
+}
+.score-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background:var(--surface-raised);
+  border:2px solid var(--border);
+  border-radius:var(--radius);
+  padding:var(--space-2) var(--space-4);
+  min-width:96px;
+}
+.score-item .label{
+  font-size:var(--text-sm);
+  color:var(--text-muted);
+  font-weight:var(--weight-semibold);
+}
+.score-item .value{
+  font-size:var(--text-xl);
+  font-weight:var(--weight-extrabold);
+  color:var(--text);
+  font-variant-numeric:tabular-nums;
+  line-height:1.2;
+}
+.combo-badge{
+  display:none;
+  align-items:center;
+  gap:var(--space-1);
+  font-size:var(--text-base);
+  font-weight:var(--weight-extrabold);
+  color:var(--warning);
+  padding:var(--space-2) var(--space-3);
+  border:2px solid var(--warning);
+  border-radius:var(--radius);
+  background:var(--warning-bg);
+  white-space:nowrap;
+}
+.combo-badge.show{display:flex}
+
+/* ═══════════════════════════════════════
+   BOARD
+   ═══════════════════════════════════════ */
+.board-wrap{
+  display:flex;
+  justify-content:center;
+  flex-shrink:0;
+}
+.board{
+  display:grid;
+  grid-template-columns:repeat(8,var(--cell-size));
+  grid-template-rows:repeat(8,var(--cell-size));
+  gap:var(--cell-gap);
+  padding:var(--space-3);
+  background:var(--surface-raised);
+  border:var(--board-border) solid var(--border);
+  border-radius:var(--radius-lg);
+}
+.cell{
+  width:var(--cell-size);
+  height:var(--cell-size);
+  background:#FFFFFF;
+  border:2px solid var(--border-thin);
+  border-radius:var(--radius-sm);
+  transition:background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+.cell.filled{
+  background:var(--primary);
+  border-color:var(--primary-hover);
+}
+.cell.preview{
+  background:var(--primary-light);
+  border-color:var(--primary);
+}
+.cell.preview-invalid{
+  background:var(--error-bg);
+  border-color:var(--error);
+}
+.cell.bad{
+  animation:cellShake 300ms ease;
+}
+@keyframes cellShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-3px)}
+  75%{transform:translateX(3px)}
+}
+
+/* ═══════════════════════════════════════
+   PIECE TRAY
+   ═══════════════════════════════════════ */
+.tray{
+  display:flex;
+  justify-content:space-between;
+  align-items:stretch;
+  gap:var(--space-3);
+  padding:var(--space-3) 0 var(--space-2);
+}
+.piece-slot{
+  flex:1;
+  min-height:110px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--surface-raised);
+  border:2px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:var(--space-2);
+  cursor:pointer;
+  transition:all var(--transition-base);
+  -webkit-tap-highlight-color:transparent;
+}
+.piece-slot.selected{
+  border-color:var(--primary);
+  border-width:3px;
+  background:var(--primary-light);
+  box-shadow:0 0 0 3px var(--primary-ring);
+}
+.piece-slot:active{
+  transform:scale(0.96);
+}
+.piece-slot.empty{
+  border-style:dashed;
+  border-color:var(--border-thin);
+  background:var(--surface);
+  cursor:default;
+}
+.piece-grid{
+  display:grid;
+  gap:3px;
+}
+.piece-cell{
+  width:18px;
+  height:18px;
+  border-radius:4px;
+  background:var(--border-thin);
+}
+.piece-cell.on{
+  background:var(--primary);
+}
+.piece-slot.selected .piece-cell.on{
+  background:var(--primary-hover);
+}
+
+/* ═══════════════════════════════════════
+   CONTROLS
+   ═══════════════════════════════════════ */
+.controls{
+  display:flex;
+  justify-content:center;
+  padding:var(--space-2) 0 var(--space-3);
+}
+.hint{
+  font-size:var(--text-sm);
+  color:var(--text-muted);
+  text-align:center;
+}
+.btn-reset{
+  min-height:48px;
+  padding:var(--space-2) var(--space-6);
+  border-radius:var(--btn-radius);
+  border:2px solid var(--border);
+  background:var(--surface);
+  font-size:var(--text-base);
+  font-weight:var(--weight-bold);
+  font-family:var(--font-family);
+  color:var(--text);
+  cursor:pointer;
+  transition:all var(--transition-fast);
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-reset:active{
+  background:var(--surface-raised);
+  transform:scale(0.96);
+}
+
+/* ═══════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.50);
+  display:none;
+  justify-content:center;
+  z-index:100;
+  padding:var(--space-6);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  padding:var(--space-8) var(--space-6);
+  width:100%;
+  max-width:400px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.25);
+  text-align:center;
+  animation:modalIn 250ms ease;
+  border:3px solid var(--border);
+  margin:auto;
+}
+@keyframes modalIn{
+  from{opacity:0;transform:scale(0.92) translateY(10px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.modal h2{
+  font-size:clamp(20px,6vw,32px);
+  font-weight:var(--weight-extrabold);
+  margin-bottom:var(--space-3);
+  color:var(--text);
+  line-height:1.3;
+  white-space:nowrap;
+}
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--space-3);
+  margin-bottom:var(--space-3);
+}
+.modal-header h2{
+  margin-bottom:0;
+}
+.modal p{
+  font-size:clamp(16px,4vw,20px);
+  color:var(--text-secondary);
+  margin-bottom:var(--space-4);
+  line-height:var(--line-height);
+  font-weight:var(--weight-regular);
+}
+.modal-emoji{font-size:clamp(32px,10vw,48px);display:block}
+.modal-actions{
+  display:flex;
+  gap:var(--space-3);
+  margin-top:var(--space-4);
+}
+.btn{
+  flex:1;
+  padding:var(--space-4) var(--space-5);
+  border-radius:var(--btn-radius);
+  border:none;
+  font-size:var(--text-lg);
+  font-weight:var(--weight-bold);
+  font-family:var(--font-family);
+  cursor:pointer;
+  transition:all var(--transition-base);
+  min-height:var(--touch-min);
+  line-height:1.3;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-primary{
+  background:var(--primary);
+  color:#FFFFFF;
+}
+.btn-primary:active{
+  background:var(--primary-hover);
+  transform:scale(0.97);
+}
+.btn-secondary{
+  background:var(--surface);
+  color:var(--text);
+  border:2.5px solid var(--border);
+}
+.btn-secondary:active{
+  background:var(--surface-raised);
+  transform:scale(0.97);
+}
+.new-record-badge{
+  display:inline-block;
+  margin:var(--space-2) auto var(--space-3);
+  padding:var(--space-2) var(--space-5);
+  background:var(--warning-bg);
+  border:2px solid var(--warning);
+  border-radius:var(--btn-radius);
+  font-size:var(--text-lg);
+  font-weight:var(--weight-extrabold);
+  color:var(--warning);
+  animation:badgePop 400ms ease;
+}
+@keyframes badgePop{
+  0%{transform:scale(0.6);opacity:0}
+  60%{transform:scale(1.08)}
+  100%{transform:scale(1);opacity:1}
+}
+.completion-stats{
+  display:flex;
+  gap:var(--space-3);
+  justify-content:center;
+  margin:var(--space-3) 0 var(--space-4);
+  flex-wrap:nowrap;
+}
+.stat{text-align:center;min-width:0}
+.stat-val{
+  font-size:clamp(16px,5vw,24px);
+  font-weight:var(--weight-extrabold);
+  color:var(--text);
+  display:block;
+  line-height:1.2;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.stat-label{
+  font-size:clamp(12px,3vw,14px);
+  color:var(--text-muted);
+  display:block;
+  margin-top:var(--space-1);
+  font-weight:var(--weight-semibold);
+  white-space:nowrap;
+}
+.btn-portal{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--space-2);
+  width:100%;
+  margin-top:var(--space-3);
+  padding:var(--space-3) var(--space-5);
+  border-radius:var(--btn-radius);
+  border:2.5px solid var(--border);
+  background:var(--surface-raised);
+  color:var(--text);
+  font-size:var(--text-base);
+  font-weight:var(--weight-bold);
+  font-family:var(--font-family);
+  cursor:pointer;
+  transition:all var(--transition-base);
+  min-height:44px;
+  line-height:1.2;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-portal:active{
+  background:var(--border-thin);
+  transform:scale(0.98);
+}
+.records-list{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-2);
+  margin:var(--space-3) 0 var(--space-4);
+}
+.record-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-3);
+  padding:var(--space-3) var(--space-5);
+  background:var(--surface-raised);
+  border:2px solid var(--border);
+  border-radius:var(--btn-radius);
+}
+.record-diff{
+  font-size:var(--text-base);
+  font-weight:var(--weight-bold);
+  color:var(--text);
+}
+.record-time{
+  font-size:clamp(16px,5vw,22px);
+  font-weight:var(--weight-extrabold);
+  color:var(--text);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════ */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:80px;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--text);
+  color:#FFFFFF;
+  padding:var(--space-3) var(--space-6);
+  border-radius:var(--btn-radius);
+  font-size:var(--text-base);
+  font-weight:var(--weight-bold);
+  opacity:0;
+  pointer-events:none;
+  transition:all var(--transition-base);
+  z-index:200;
+  max-width:90%;
+  text-align:center;
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media(max-height:700px){
+  .header{padding:var(--space-2) 0 var(--space-1)}
+  .score-bar{padding:var(--space-1) 0 var(--space-2)}
+  .score-item{padding:var(--space-1) var(--space-3);min-width:84px}
+  .piece-slot{min-height:92px}
+  .hint{display:none}
+}
+@media(max-height:640px){
+  .modal{padding:var(--space-4) var(--space-6)}
+  .modal-header{margin-bottom:var(--space-2)}
+  .modal p{margin-bottom:var(--space-3);font-size:var(--text-base)}
+  .btn{padding:var(--space-2) var(--space-4)}
+  .modal-actions{margin-top:var(--space-3)}
+  .btn-portal{margin-top:var(--space-2)}
+}
+@media(max-width:380px){
+  .header{flex-wrap:wrap;row-gap:var(--space-1)}
+  .header-actions{width:100%;justify-content:center}
+  .score-item{min-width:80px;padding:var(--space-1) var(--space-2)}
+  .piece-slot{min-height:100px}
+  .hint{font-size:var(--text-xs)}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="header">
+    <h1 class="logo">🧩 아빠의 블록 퍼즐</h1>
+    <div class="header-actions">
+      <button class="header-btn" id="btnRecords" aria-label="최고 기록">기록</button>
+      <button class="header-btn" id="btnRules" aria-label="규칙">규칙</button>
+      <button class="header-btn" id="btnNewGame" aria-label="새 게임">새 게임</button>
+    </div>
+  </header>
+
+  <div class="score-bar">
+    <div class="score-item"><span class="label">점수</span><span class="value" id="scoreValue">0</span></div>
+    <div class="combo-badge" id="comboBadge">🔥 콤보!</div>
+    <div class="score-item"><span class="label">최고 점수</span><span class="value" id="bestValue">--</span></div>
+  </div>
+
+  <div class="board-wrap">
+    <div class="board" id="board" aria-label="블록 퍼즐 보드"></div>
+  </div>
+
+  <div class="tray" id="tray" role="group" aria-label="조각 목록">
+    <div class="piece-slot" id="slot0" aria-label="조각 1"></div>
+    <div class="piece-slot" id="slot1" aria-label="조각 2"></div>
+    <div class="piece-slot" id="slot2" aria-label="조각 3"></div>
+  </div>
+
+  <div class="controls">
+    <p class="hint">조각을 탭해서 선택하고, 보드에 놓을 칸을 탭하세요</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- New Game Modal -->
+<div class="modal-overlay" id="modalReset">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-emoji">🔄</span>
+      <h2>새 게임</h2>
+    </div>
+    <p>지금 게임을 그만두고 새로 시작할까요?</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btnCancelReset">취소</button>
+      <button class="btn btn-primary" id="btnConfirmReset">새로 시작</button>
+    </div>
+    <button class="btn-portal" type="button">🎮 다른 게임하기</button>
+  </div>
+</div>
+
+<!-- Game Over Modal -->
+<div class="modal-overlay" id="modalGameOver">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-emoji">😵</span>
+      <h2>더 놓을 곳이 없어요!</h2>
+    </div>
+    <p id="goMessage">이번 판은 여기까지예요</p>
+    <div id="goNewRecord" class="new-record-badge" style="display:none">🏆 새 기록!</div>
+    <div class="completion-stats">
+      <div class="stat"><span class="stat-val" id="goScore">0</span><span class="stat-label">점수</span></div>
+      <div class="stat"><span class="stat-val" id="goBest">--</span><span class="stat-label">최고 점수</span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btnGoClose">닫기</button>
+      <button class="btn btn-primary" id="btnGoNew">새 게임</button>
+    </div>
+    <button class="btn-portal" type="button">🎮 다른 게임하기</button>
+  </div>
+</div>
+
+<!-- Rules Modal -->
+<div class="modal-overlay" id="modalRules">
+  <div class="modal modal-rules">
+    <div class="modal-header">
+      <span class="modal-emoji">📋</span>
+      <h2>게임 규칙</h2>
+    </div>
+    <div class="rules-content">
+      <div class="rule-section">
+        <h3>🧩 조각 놓기</h3>
+        <p>아래의 조각을 탭해서 선택하고, 보드의 놓을 칸을 탭하세요. 조각이 놓일 자리는 미리 파란색으로 보여요.</p>
+      </div>
+      <div class="rule-section">
+        <h3>✨ 줄 지우기</h3>
+        <p>가로줄이나 세로줄을 꽉 채우면 그 줄이 사라져요. 여러 줄을 한 번에 지우면 콤보 점수를 받아요.</p>
+      </div>
+      <div class="rule-section">
+        <h3>⏱ 시간 제한 없음</h3>
+        <p>서두를 필요 없어요. 천천히 생각하면서 놓을 곳을 골라보세요.</p>
+      </div>
+      <div class="rule-section">
+        <h3>😵 게임 종료</h3>
+        <p>주어진 조각을 놓을 곳이 하나도 없으면 게임이 끝나요.</p>
+      </div>
+      <div class="rule-section">
+        <h3>🏆 최고 점수</h3>
+        <p>얻은 점수는 최고 점수로 자동 저장돼요.</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="btnCloseRules">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Records Modal -->
+<div class="modal-overlay" id="modalRecords">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-emoji">🏆</span>
+      <h2>최고 점수</h2>
+    </div>
+    <p>최고 점수는 자동으로 저장돼요</p>
+    <div class="records-list" id="recordsList">
+      <div class="record-row"><span class="record-diff">최고 점수</span><span class="record-time">--</span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="btnCloseRecords">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+const BEST_KEY = 'blockpuzzleBestScore';
+const PORTAL_URL = 'https://appa-games.github.io/';
+
+const BOARD_SIZE = 8;
+const PIECE_COUNT = 3;
+
+const PIECES = [
+  [[1]],
+  [[1,1]],
+  [[1],[1]],
+  [[1,1,1]],
+  [[1],[1],[1]],
+  [[1,1,1,1]],
+  [[1],[1],[1],[1]],
+  [[1,1,1,1,1]],
+  [[1],[1],[1],[1],[1]],
+  [[1,1],[1,1]],
+  [[1,1,1],[1,1,1]],
+  [[1,1,1,1],[1,1,1,1]],
+  [[1,0],[1,1]],
+  [[0,1],[1,1]],
+  [[1,1],[0,1]],
+  [[1,1],[1,0]],
+  [[1,0],[1,0],[1,1]],
+  [[0,1],[0,1],[1,1]],
+  [[1,0],[1,0],[1,1],[1,1]],
+  [[0,1],[0,1],[1,1],[1,1]],
+  [[1,1,0],[0,1,1]],
+  [[0,1,1],[1,1,0]],
+  [[1,1],[1,0],[1,0]],
+  [[1,1],[0,1],[0,1]],
+  [[1,0,0],[1,1,1]],
+  [[0,0,1],[1,1,1]],
+  [[1,1,1],[0,0,1]],
+  [[1,1,1],[1,0,0]],
+  [[0,1,0],[1,1,1]],
+  [[1,1,1],[0,1,0]],
+  [[1,0],[1,1],[0,1]],
+  [[0,1],[1,1],[1,0]],
+  [[1,1,1],[0,1,0],[0,0,0]]
+];
+
+let grid = [];
+let pieces = [];
+let selected = -1;
+let score = 0;
+let combo = 0;
+let lastCombo = 0;
+let gameOver = false;
+
+const boardEl = document.getElementById('board');
+const trayEl = document.getElementById('tray');
+const slots = [document.getElementById('slot0'), document.getElementById('slot1'), document.getElementById('slot2')];
+const scoreValue = document.getElementById('scoreValue');
+const bestValue = document.getElementById('bestValue');
+const comboBadge = document.getElementById('comboBadge');
+const toastEl = document.getElementById('toast');
+
+const modalGameOver = document.getElementById('modalGameOver');
+const modalReset = document.getElementById('modalReset');
+const modalRules = document.getElementById('modalRules');
+const modalRecords = document.getElementById('modalRecords');
+const goMessage = document.getElementById('goMessage');
+const goScore = document.getElementById('goScore');
+const goBest = document.getElementById('goBest');
+const goNewRecord = document.getElementById('goNewRecord');
+const recordsList = document.getElementById('recordsList');
+
+const btnNewGame = document.getElementById('btnNewGame');
+const btnRules = document.getElementById('btnRules');
+const btnRecords = document.getElementById('btnRecords');
+const btnCancelReset = document.getElementById('btnCancelReset');
+const btnConfirmReset = document.getElementById('btnConfirmReset');
+const btnGoClose = document.getElementById('btnGoClose');
+const btnGoNew = document.getElementById('btnGoNew');
+const btnCloseRules = document.getElementById('btnCloseRules');
+const btnCloseRecords = document.getElementById('btnCloseRecords');
+const portalBtns = document.querySelectorAll('.btn-portal');
+
+function getBestScore() {
+  try {
+    const raw = localStorage.getItem(BEST_KEY);
+    const n = parseInt(raw, 10);
+    if (typeof n === 'number' && !isNaN(n) && n >= 0) return n;
+    return null;
+  } catch (e) { return null; }
+}
+
+function formatScore(n) {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function randomPiece() {
+  const idx = Math.floor(Math.random() * PIECES.length);
+  return PIECES[idx].map(function(row) { return row.slice(); });
+}
+
+function initBoard() {
+  grid = [];
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    const row = [];
+    for (let c = 0; c < BOARD_SIZE; c++) row.push(0);
+    grid.push(row);
+  }
+}
+
+function renderBoard() {
+  boardEl.innerHTML = '';
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    for (let c = 0; c < BOARD_SIZE; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (grid[r][c] ? ' filled' : '');
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      cell.addEventListener('click', function() { onBoardTap(r, c); });
+      boardEl.appendChild(cell);
+    }
+  }
+}
+
+function renderTray() {
+  for (let i = 0; i < PIECE_COUNT; i++) {
+    const slot = slots[i];
+    slot.innerHTML = '';
+    if (pieces[i]) {
+      const g = document.createElement('div');
+      g.className = 'piece-grid';
+      g.style.gridTemplateColumns = 'repeat(' + pieces[i][0].length + ', 18px)';
+      for (let r = 0; r < pieces[i].length; r++) {
+        for (let c = 0; c < pieces[i][r].length; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'piece-cell' + (pieces[i][r][c] ? ' on' : '');
+          g.appendChild(cell);
+        }
+      }
+      slot.appendChild(g);
+      slot.classList.toggle('selected', i === selected);
+      slot.classList.remove('empty');
+    } else {
+      slot.classList.add('empty');
+      slot.classList.remove('selected');
+    }
+  }
+}
+
+function canPlace(piece, r, c) {
+  for (let pr = 0; pr < piece.length; pr++) {
+    for (let pc = 0; pc < piece[pr].length; pc++) {
+      if (!piece[pr][pc]) continue;
+      const br = r + pr;
+      const bc = c + pc;
+      if (br < 0 || br >= BOARD_SIZE || bc < 0 || bc >= BOARD_SIZE) return false;
+      if (grid[br][bc]) return false;
+    }
+  }
+  return true;
+}
+
+function anyPlacement(piece) {
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    for (let c = 0; c < BOARD_SIZE; c++) {
+      if (canPlace(piece, r, c)) return true;
+    }
+  }
+  return false;
+}
+
+function hasAnyMove() {
+  for (let i = 0; i < pieces.length; i++) {
+    if (pieces[i] && anyPlacement(pieces[i])) return true;
+  }
+  return false;
+}
+
+function clearPreview() {
+  const prev = boardEl.querySelectorAll('.cell.preview, .cell.preview-invalid');
+  for (let i = 0; i < prev.length; i++) prev[i].classList.remove('preview', 'preview-invalid');
+}
+
+function showPreview(piece, r, c) {
+  clearPreview();
+  const ok = canPlace(piece, r, c);
+  for (let pr = 0; pr < piece.length; pr++) {
+    for (let pc = 0; pc < piece[pr].length; pc++) {
+      if (!piece[pr][pc]) continue;
+      const br = r + pr;
+      const bc = c + pc;
+      if (br < 0 || br >= BOARD_SIZE || bc < 0 || bc >= BOARD_SIZE) continue;
+      const cell = boardEl.querySelector('.cell[data-r="' + br + '"][data-c="' + bc + '"]');
+      if (cell) cell.classList.add(ok ? 'preview' : 'preview-invalid');
+    }
+  }
+  return ok;
+}
+
+function onBoardTap(r, c) {
+  if (gameOver) return;
+  if (selected < 0 || !pieces[selected]) {
+    clearPreview();
+    return;
+  }
+  const piece = pieces[selected];
+  const ok = showPreview(piece, r, c);
+  if (!ok) {
+    clearPreview();
+    showToast('여기에는 놓을 수 없어요');
+    return;
+  }
+  placePiece(selected, r, c);
+}
+
+function placePiece(idx, r, c) {
+  const piece = pieces[idx];
+  for (let pr = 0; pr < piece.length; pr++) {
+    for (let pc = 0; pc < piece[pr].length; pc++) {
+      if (!piece[pr][pc]) continue;
+      grid[r + pr][c + pc] = 1;
+    }
+  }
+  pieces[idx] = null;
+  selected = -1;
+  clearPreview();
+  const cleared = clearLines();
+  score += pieceScore(piece);
+  if (cleared > 0) {
+    combo++;
+    const bonus = combo * cleared * 100;
+    score += bonus;
+    lastCombo = cleared;
+    comboBadge.textContent = '🔥 ' + cleared + '줄 콤보 +' + bonus;
+    comboBadge.classList.add('show');
+    setTimeout(function() { comboBadge.classList.remove('show'); }, 1800);
+  } else {
+    combo = 0;
+  }
+  updateScore();
+  renderBoard();
+  renderTray();
+  refillTray();
+  renderTray();
+  checkGameOver();
+}
+
+function pieceScore(piece) {
+  let n = 0;
+  for (let r = 0; r < piece.length; r++) {
+    for (let c = 0; c < piece[r].length; c++) {
+      if (piece[r][c]) n++;
+    }
+  }
+  return n * 10;
+}
+
+function clearLines() {
+  const clearRows = [];
+  const clearCols = [];
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    let full = true;
+    for (let c = 0; c < BOARD_SIZE; c++) {
+      if (!grid[r][c]) { full = false; break; }
+    }
+    if (full) clearRows.push(r);
+  }
+  for (let c = 0; c < BOARD_SIZE; c++) {
+    let full = true;
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      if (!grid[r][c]) { full = false; break; }
+    }
+    if (full) clearCols.push(c);
+  }
+  for (let i = 0; i < clearRows.length; i++) grid[clearRows[i]] = new Array(BOARD_SIZE).fill(0);
+  for (let i = 0; i < clearCols.length; i++) {
+    for (let r = 0; r < BOARD_SIZE; r++) grid[r][clearCols[i]] = 0;
+  }
+  return clearRows.length + clearCols.length;
+}
+
+function updateScore() {
+  scoreValue.textContent = formatScore(score);
+  const best = getBestScore();
+  bestValue.textContent = best !== null ? formatScore(best) : '--';
+}
+
+function refillTray() {
+  for (let i = 0; i < PIECE_COUNT; i++) {
+    if (!pieces[i]) pieces[i] = randomPiece();
+  }
+}
+
+function checkGameOver() {
+  if (hasAnyMove()) return;
+  gameOver = true;
+  let isNewRecord = false;
+  const best = getBestScore();
+  if (best === null || score > best) {
+    try { localStorage.setItem(BEST_KEY, String(score)); } catch (e) {}
+    isNewRecord = true;
+  }
+  goMessage.textContent = '점수 ' + formatScore(score) + '점으로 게임이 끝났어요';
+  goScore.textContent = formatScore(score);
+  const nb = getBestScore();
+  goBest.textContent = nb !== null ? formatScore(nb) : '--';
+  goNewRecord.style.display = isNewRecord ? 'block' : 'none';
+  updateScore();
+  setTimeout(function() { modalGameOver.classList.add('show'); }, 400);
+}
+
+function newGame() {
+  gameOver = false;
+  score = 0;
+  combo = 0;
+  selected = -1;
+  initBoard();
+  pieces = [];
+  for (let i = 0; i < PIECE_COUNT; i++) pieces.push(randomPiece());
+  updateScore();
+  renderBoard();
+  renderTray();
+}
+
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastEl._t);
+  toastEl._t = setTimeout(function() { toastEl.classList.remove('show'); }, 2200);
+}
+
+function renderRecords() {
+  const best = getBestScore();
+  recordsList.innerHTML = '<div class="record-row"><span class="record-diff">최고 점수</span><span class="record-time">' + (best !== null ? formatScore(best) : '--') + '</span></div>';
+}
+
+function closeAllModals() {
+  modalGameOver.classList.remove('show');
+  modalReset.classList.remove('show');
+  modalRules.classList.remove('show');
+  modalRecords.classList.remove('show');
+}
+
+function modalOpen() {
+  return modalGameOver.classList.contains('show') ||
+         modalReset.classList.contains('show') ||
+         modalRules.classList.contains('show') ||
+         modalRecords.classList.contains('show');
+}
+
+function bindEvents() {
+  for (let i = 0; i < PIECE_COUNT; i++) {
+    slots[i].addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (gameOver) return;
+      if (!pieces[i]) return;
+      selected = (selected === i) ? -1 : i;
+      clearPreview();
+      renderTray();
+    });
+  }
+
+  btnNewGame.addEventListener('click', function(e) {
+    e.stopPropagation();
+    modalReset.classList.add('show');
+  });
+  btnRules.addEventListener('click', function(e) {
+    e.stopPropagation();
+    modalRules.classList.add('show');
+  });
+  btnRecords.addEventListener('click', function(e) {
+    e.stopPropagation();
+    renderRecords();
+    modalRecords.classList.add('show');
+  });
+  btnCancelReset.addEventListener('click', function() {
+    modalReset.classList.remove('show');
+  });
+  btnConfirmReset.addEventListener('click', function() {
+    modalReset.classList.remove('show');
+    newGame();
+  });
+  btnGoClose.addEventListener('click', function() {
+    modalGameOver.classList.remove('show');
+  });
+  btnGoNew.addEventListener('click', function() {
+    modalGameOver.classList.remove('show');
+    newGame();
+  });
+  btnCloseRules.addEventListener('click', function() {
+    modalRules.classList.remove('show');
+  });
+  btnCloseRecords.addEventListener('click', function() {
+    modalRecords.classList.remove('show');
+  });
+
+  for (let i = 0; i < portalBtns.length; i++) {
+    portalBtns[i].addEventListener('click', function() {
+      window.location.href = PORTAL_URL;
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.modal')) {
+      modalRules.classList.remove('show');
+      modalReset.classList.remove('show');
+      modalRecords.classList.remove('show');
+    }
+  });
+}
+
+bindEvents();
+newGame();
+})();
+</script>
+</body>
+</html>

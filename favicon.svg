@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#2563EB"/>
+  <g transform="translate(8,8)">
+    <!-- Board panel -->
+    <rect x="0" y="0" width="48" height="48" rx="4" fill="#FFFFFF"/>
+    <!-- L-tromino block piece (top-left, top-right, bottom-left) -->
+    <rect x="4" y="4" width="19" height="19" rx="3" fill="#2563EB"/>
+    <rect x="25" y="4" width="19" height="19" rx="3" fill="#2563EB"/>
+    <rect x="4" y="25" width="19" height="19" rx="3" fill="#2563EB"/>
+  </g>
+</svg>

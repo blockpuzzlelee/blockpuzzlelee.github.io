@@ -1056,7 +1056,7 @@ function updateDrag(e) {
     createGhost(drag.idx);
     renderTray();
   }
-  const topY = Math.max(y - ghostEl.offsetHeight - 14, 8);
+  const topY = Math.max(y - ghostEl.offsetHeight - 40, 8);
   ghostEl.style.left = (x - ghostEl.offsetWidth / 2) + 'px';
   ghostEl.style.top = topY + 'px';
   const pos = dropPos(x, topY + ghostEl.offsetHeight / 2);
@@ -1070,7 +1070,7 @@ function endDrag(e) {
   const piece = pieces[d.idx];
   let pos = null;
   if (d.moved) {
-    const topY = Math.max(e.clientY - ghostEl.offsetHeight - 14, 8);
+    const topY = Math.max(e.clientY - ghostEl.offsetHeight - 40, 8);
     pos = dropPos(e.clientX, topY + ghostEl.offsetHeight / 2);
   }
   drag = null;

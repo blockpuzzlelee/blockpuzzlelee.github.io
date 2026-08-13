@@ -9,11 +9,11 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>아빠의 블록 퍼즐 - 무료 블록 맞추기 게임</title>
-  <meta name="description" content="아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임. 조각을 탭해서 놓고, 줄을 완성해 지우세요. 언제든 천천히 즐길 수 있어요.">
+  <meta name="description" content="아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임. 조각을 끌어다 놓고, 줄을 완성해 지우세요. 언제든 천천히 즐길 수 있어요.">
   <link rel="canonical" href="https://blockpuzzlelee.github.io/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="아빠의 블록 퍼즐 - 무료 블록 맞추기 게임">
-  <meta property="og:description" content="아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임. 조각을 탭해서 놓고, 줄을 완성해 지우세요.">
+  <meta property="og:description" content="아빠의 블록 퍼즐 - 큰 글씨와 넉넉한 버튼으로 아빠를 위한 무료 블록 퍼즐 게임. 조각을 끌어다 놓고, 줄을 완성해 지우세요.">
   <meta property="og:url" content="https://blockpuzzlelee.github.io/">
   <meta property="og:site_name" content="아빠의 블록 퍼즐">
   <meta property="og:locale" content="ko_KR">
@@ -52,7 +52,7 @@
     },
     "featureList": [
       "큰 글씨와 넉넉한 버튼",
-      "탭으로 조각 놓기",
+      "드래그로 조각 놓기",
       "줄 지우기 콤보",
       "최고 점수 자동 기록",
       "모바일 한 화면 배치"
@@ -109,7 +109,7 @@
 
   --touch-min:56px;
   --cell-size:clamp(30px,calc((100vw - 96px) / 8),58px);
-  --cell-gap:4px;
+  --cell-gap:2px;
   --board-border:3px;
   --btn-radius:12px;
   --radius:12px;
@@ -346,7 +346,6 @@ body{
   width:18px;
   height:18px;
   border-radius:4px;
-  background:var(--border-thin);
 }
 .piece-cell.on{
   background:var(--primary);
@@ -720,7 +719,7 @@ body{
     <div class="rules-content">
       <div class="rule-section">
         <h3>🧩 조각 놓기</h3>
-        <p>아래의 조각을 누른 채 보드로 끌어다 놓으세요. 조각이 놓일 자리는 미리 색으로 보여요. (조각을 탭해서 고른 뒤, 보드 칸을 탭해도 놓을 수 있어요)</p>
+        <p>아래의 조각을 누른 채 보드로 끌어다 놓으세요. 조각이 놓일 자리는 미리 색으로 보여요.</p>
       </div>
       <div class="rule-section">
         <h3>✨ 줄 지우기</h3>
@@ -801,7 +800,6 @@ let lastCombo = 0;
 let gameOver = false;
 let drag = null;
 let ghostEl = null;
-let suppressNextClick = false;
 let beatBest = false;
 let clearing = false;
 let clearTimer = null;
@@ -913,7 +911,6 @@ function renderBoard() {
       cell.className = 'cell' + (grid[r][c] ? ' filled' : '');
       cell.dataset.r = r;
       cell.dataset.c = c;
-      cell.addEventListener('click', function() { onBoardTap(r, c); });
       boardEl.appendChild(cell);
     }
   }
@@ -927,10 +924,14 @@ function renderTray() {
       const g = document.createElement('div');
       g.className = 'piece-grid';
       g.style.gridTemplateColumns = 'repeat(' + pieces[i][0].length + ', 18px)';
+      g.style.gridTemplateRows = 'repeat(' + pieces[i].length + ', 18px)';
       for (let r = 0; r < pieces[i].length; r++) {
         for (let c = 0; c < pieces[i][r].length; c++) {
+          if (!pieces[i][r][c]) continue;
           const cell = document.createElement('div');
-          cell.className = 'piece-cell' + (pieces[i][r][c] ? ' on' : '');
+          cell.className = 'piece-cell on';
+          cell.style.gridRowStart = (r + 1);
+          cell.style.gridColumnStart = (c + 1);
           g.appendChild(cell);
         }
       }
@@ -994,23 +995,6 @@ function showPreview(piece, r, c) {
   return ok;
 }
 
-function onBoardTap(r, c) {
-  if (gameOver || clearing) return;
-  if (suppressNextClick) { suppressNextClick = false; return; }
-  if (selected < 0 || !pieces[selected]) {
-    clearPreview();
-    return;
-  }
-  const piece = pieces[selected];
-  const ok = showPreview(piece, r, c);
-  if (!ok) {
-    clearPreview();
-    showToast('여기에는 놓을 수 없어요');
-    return;
-  }
-  placePiece(selected, r, c);
-}
-
 function createGhost(i) {
   const p = pieces[i];
   const g = document.createElement('div');
@@ -1018,10 +1002,14 @@ function createGhost(i) {
   const inner = document.createElement('div');
   inner.className = 'piece-grid';
   inner.style.gridTemplateColumns = 'repeat(' + p[0].length + ', 18px)';
+  inner.style.gridTemplateRows = 'repeat(' + p.length + ', 18px)';
   for (let r = 0; r < p.length; r++) {
     for (let c = 0; c < p[r].length; c++) {
+      if (!p[r][c]) continue;
       const cell = document.createElement('div');
-      cell.className = 'piece-cell' + (p[r][c] ? ' on' : '');
+      cell.className = 'piece-cell on';
+      cell.style.gridRowStart = (r + 1);
+      cell.style.gridColumnStart = (c + 1);
       inner.appendChild(cell);
     }
   }
@@ -1068,9 +1056,10 @@ function updateDrag(e) {
     createGhost(drag.idx);
     renderTray();
   }
+  const topY = Math.max(y - ghostEl.offsetHeight - 14, 8);
   ghostEl.style.left = (x - ghostEl.offsetWidth / 2) + 'px';
-  ghostEl.style.top = (y - ghostEl.offsetHeight / 2) + 'px';
-  const pos = dropPos(x, y);
+  ghostEl.style.top = topY + 'px';
+  const pos = dropPos(x, topY + ghostEl.offsetHeight / 2);
   if (pos) showPreview(pieces[drag.idx], pos.r, pos.c);
   else clearPreview();
 }
@@ -1079,14 +1068,16 @@ function endDrag(e) {
   if (!drag) return;
   const d = drag;
   const piece = pieces[d.idx];
-  const pos = d.moved ? dropPos(e.clientX, e.clientY) : null;
+  let pos = null;
+  if (d.moved) {
+    const topY = Math.max(e.clientY - ghostEl.offsetHeight - 14, 8);
+    pos = dropPos(e.clientX, topY + ghostEl.offsetHeight / 2);
+  }
   drag = null;
   removeGhost();
   clearPreview();
   slots[d.idx].classList.remove('dragging');
   if (!d.moved) return;
-  suppressNextClick = true;
-  setTimeout(function() { suppressNextClick = false; }, 120);
   if (clearing) { selected = -1; renderTray(); return; }
   if (!piece) { selected = -1; renderTray(); return; }
   if (pos && canPlace(piece, pos.r, pos.c)) {
@@ -1300,15 +1291,6 @@ function modalOpen() {
 
 function bindEvents() {
   for (let i = 0; i < PIECE_COUNT; i++) {
-    slots[i].addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (gameOver) return;
-      if (suppressNextClick) { suppressNextClick = false; return; }
-      if (!pieces[i]) return;
-      selected = (selected === i) ? -1 : i;
-      clearPreview();
-      renderTray();
-    });
     slots[i].addEventListener('pointerdown', function(e) { startDrag(i, e); });
     slots[i].addEventListener('pointermove', function(e) { updateDrag(e); });
     slots[i].addEventListener('pointerup', function(e) { endDrag(e); });

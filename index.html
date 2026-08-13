@@ -869,7 +869,7 @@ function restoreGame() {
     if (data.pieces[i] !== null && !Array.isArray(data.pieces[i])) return false;
   }
   grid = data.grid;
-  pieces = data.pieces;
+  pieces = data.pieces.map(function(p) { return p ? normalizePiece(p) : p; });
   score = typeof data.score === 'number' && data.score >= 0 ? data.score : 0;
   combo = typeof data.combo === 'number' && data.combo >= 0 ? data.combo : 0;
   selected = -1;
@@ -877,9 +877,23 @@ function restoreGame() {
   return true;
 }
 
+function normalizePiece(p) {
+  while (p.length > 1 && p[0].every(function(v) { return !v; })) p.shift();
+  while (p.length > 1 && p[p.length - 1].every(function(v) { return !v; })) p.pop();
+  const w = p[0].length;
+  let c0 = 0;
+  let c1 = w - 1;
+  while (c0 < c1 && p.every(function(row) { return !row[c0]; })) c0++;
+  while (c1 > c0 && p.every(function(row) { return !row[c1]; })) c1--;
+  if (c0 > 0 || c1 < w - 1) {
+    for (let r = 0; r < p.length; r++) p[r] = p[r].slice(c0, c1 + 1);
+  }
+  return p;
+}
+
 function randomPiece() {
   const idx = Math.floor(Math.random() * PIECES.length);
-  return PIECES[idx].map(function(row) { return row.slice(); });
+  return normalizePiece(PIECES[idx].map(function(row) { return row.slice(); }));
 }
 
 function initBoard() {

@@ -273,6 +273,14 @@ body{
   background:var(--primary);
   border-color:var(--primary-hover);
 }
+.cell.clearing{
+  animation:cellClear 0.38s ease forwards;
+}
+@keyframes cellClear{
+  0%{transform:scale(1);background:var(--primary)}
+  40%{transform:scale(1.1);background:#fff;box-shadow:0 0 16px rgba(37,99,235,0.85)}
+  100%{transform:scale(0.15);opacity:0;background:#fff;box-shadow:0 0 0 rgba(37,99,235,0)}
+}
 .cell.preview{
   background:var(--primary-light);
   border-color:var(--primary);
@@ -635,9 +643,8 @@ body{
 
 <div class="container">
   <header class="header">
-    <h1 class="logo">아빠 아빠의 블록 퍼즐</h1>
+    <h1 class="logo">👨🏻 아빠의 블록 퍼즐</h1>
     <div class="header-actions">
-      <button class="header-btn" id="btnRecords" aria-label="최고 기록">기록</button>
       <button class="header-btn" id="btnRules" aria-label="규칙">규칙</button>
       <button class="header-btn" id="btnNewGame" aria-label="새 게임">새 게임</button>
     </div>
@@ -738,28 +745,12 @@ body{
   </div>
 </div>
 
-<!-- Records Modal -->
-<div class="modal-overlay" id="modalRecords">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-emoji">🏆</span>
-      <h2>최고 점수</h2>
-    </div>
-    <p>최고 점수는 자동으로 저장돼요</p>
-    <div class="records-list" id="recordsList">
-      <div class="record-row"><span class="record-diff">최고 점수</span><span class="record-time">--</span></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-primary" id="btnCloseRecords">닫기</button>
-    </div>
-  </div>
-</div>
-
 <script>
 (function(){
 'use strict';
 
 const BEST_KEY = 'blockpuzzleBestScore';
+const SAVE_KEY = 'blockpuzzleSave';
 const PORTAL_URL = 'https://appa-games.github.io/';
 
 const BOARD_SIZE = 8;
@@ -811,6 +802,9 @@ let gameOver = false;
 let drag = null;
 let ghostEl = null;
 let suppressNextClick = false;
+let beatBest = false;
+let clearing = false;
+let clearTimer = null;
 
 const boardEl = document.getElementById('board');
 const trayEl = document.getElementById('tray');
@@ -823,22 +817,18 @@ const toastEl = document.getElementById('toast');
 const modalGameOver = document.getElementById('modalGameOver');
 const modalReset = document.getElementById('modalReset');
 const modalRules = document.getElementById('modalRules');
-const modalRecords = document.getElementById('modalRecords');
 const goMessage = document.getElementById('goMessage');
 const goScore = document.getElementById('goScore');
 const goBest = document.getElementById('goBest');
 const goNewRecord = document.getElementById('goNewRecord');
-const recordsList = document.getElementById('recordsList');
 
 const btnNewGame = document.getElementById('btnNewGame');
 const btnRules = document.getElementById('btnRules');
-const btnRecords = document.getElementById('btnRecords');
 const btnCancelReset = document.getElementById('btnCancelReset');
 const btnConfirmReset = document.getElementById('btnConfirmReset');
 const btnGoClose = document.getElementById('btnGoClose');
 const btnGoNew = document.getElementById('btnGoNew');
 const btnCloseRules = document.getElementById('btnCloseRules');
-const btnCloseRecords = document.getElementById('btnCloseRecords');
 const portalBtns = document.querySelectorAll('.btn-portal');
 
 function getBestScore() {
@@ -852,6 +842,39 @@ function getBestScore() {
 
 function formatScore(n) {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function saveGame() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ grid: grid, pieces: pieces, score: score, combo: combo }));
+  } catch (e) {}
+}
+
+function clearSave() {
+  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+}
+
+function restoreGame() {
+  let data = null;
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) data = JSON.parse(raw);
+  } catch (e) {}
+  if (!data || !Array.isArray(data.grid) || data.grid.length !== BOARD_SIZE ||
+      !Array.isArray(data.pieces) || data.pieces.length !== PIECE_COUNT) return false;
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    if (!Array.isArray(data.grid[r]) || data.grid[r].length !== BOARD_SIZE) return false;
+  }
+  for (let i = 0; i < data.pieces.length; i++) {
+    if (data.pieces[i] !== null && !Array.isArray(data.pieces[i])) return false;
+  }
+  grid = data.grid;
+  pieces = data.pieces;
+  score = typeof data.score === 'number' && data.score >= 0 ? data.score : 0;
+  combo = typeof data.combo === 'number' && data.combo >= 0 ? data.combo : 0;
+  selected = -1;
+  gameOver = false;
+  return true;
 }
 
 function randomPiece() {
@@ -958,7 +981,7 @@ function showPreview(piece, r, c) {
 }
 
 function onBoardTap(r, c) {
-  if (gameOver) return;
+  if (gameOver || clearing) return;
   if (suppressNextClick) { suppressNextClick = false; return; }
   if (selected < 0 || !pieces[selected]) {
     clearPreview();
@@ -1015,7 +1038,7 @@ function dropPos(x, y) {
 }
 
 function startDrag(i, e) {
-  if (gameOver || !pieces[i]) return;
+  if (gameOver || clearing || !pieces[i]) return;
   drag = { idx: i, startX: e.clientX, startY: e.clientY, moved: false };
   try { slots[i].setPointerCapture(e.pointerId); } catch (err) {}
 }
@@ -1050,6 +1073,7 @@ function endDrag(e) {
   if (!d.moved) return;
   suppressNextClick = true;
   setTimeout(function() { suppressNextClick = false; }, 120);
+  if (clearing) { selected = -1; renderTray(); return; }
   if (!piece) { selected = -1; renderTray(); return; }
   if (pos && canPlace(piece, pos.r, pos.c)) {
     placePiece(d.idx, pos.r, pos.c);
@@ -1072,6 +1096,7 @@ function cancelDrag() {
 }
 
 function placePiece(idx, r, c) {
+  if (gameOver || clearing) return;
   const piece = pieces[idx];
   for (let pr = 0; pr < piece.length; pr++) {
     for (let pc = 0; pc < piece[pr].length; pc++) {
@@ -1082,25 +1107,40 @@ function placePiece(idx, r, c) {
   pieces[idx] = null;
   selected = -1;
   clearPreview();
-  const cleared = clearLines();
   score += pieceScore(piece);
+  renderBoard();
+  const cleared = findClears();
   if (cleared > 0) {
-    combo++;
-    const bonus = combo * cleared * 100;
-    score += bonus;
-    lastCombo = cleared;
-    comboBadge.textContent = '🔥 ' + cleared + '줄 콤보 +' + bonus;
-    comboBadge.classList.add('show');
-    setTimeout(function() { comboBadge.classList.remove('show'); }, 1800);
+    clearing = true;
+    markClearingCells();
+    const n = cleared;
+    clearTimer = setTimeout(function() {
+      applyClears();
+      combo++;
+      const bonus = combo * n * 100;
+      score += bonus;
+      lastCombo = n;
+      comboBadge.textContent = '🔥 ' + n + '줄 콤보 +' + bonus;
+      comboBadge.classList.add('show');
+      setTimeout(function() { comboBadge.classList.remove('show'); }, 1800);
+      updateScore();
+      renderBoard();
+      renderTray();
+      refillTray();
+      renderTray();
+      clearing = false;
+      saveGame();
+      checkGameOver();
+    }, 380);
   } else {
     combo = 0;
+    updateScore();
+    renderTray();
+    refillTray();
+    renderTray();
+    saveGame();
+    checkGameOver();
   }
-  updateScore();
-  renderBoard();
-  renderTray();
-  refillTray();
-  renderTray();
-  checkGameOver();
 }
 
 function pieceScore(piece) {
@@ -1113,33 +1153,74 @@ function pieceScore(piece) {
   return n * 10;
 }
 
-function clearLines() {
-  const clearRows = [];
-  const clearCols = [];
+function findClears() {
+  let rows = 0;
+  let cols = 0;
   for (let r = 0; r < BOARD_SIZE; r++) {
     let full = true;
     for (let c = 0; c < BOARD_SIZE; c++) {
       if (!grid[r][c]) { full = false; break; }
     }
-    if (full) clearRows.push(r);
+    if (full) rows++;
   }
   for (let c = 0; c < BOARD_SIZE; c++) {
     let full = true;
     for (let r = 0; r < BOARD_SIZE; r++) {
       if (!grid[r][c]) { full = false; break; }
     }
-    if (full) clearCols.push(c);
+    if (full) cols++;
   }
-  for (let i = 0; i < clearRows.length; i++) grid[clearRows[i]] = new Array(BOARD_SIZE).fill(0);
-  for (let i = 0; i < clearCols.length; i++) {
-    for (let r = 0; r < BOARD_SIZE; r++) grid[r][clearCols[i]] = 0;
+  return rows + cols;
+}
+
+function markClearingCells() {
+  const cells = [];
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    let full = true;
+    for (let c = 0; c < BOARD_SIZE; c++) {
+      if (!grid[r][c]) { full = false; break; }
+    }
+    if (full) for (let c = 0; c < BOARD_SIZE; c++) cells.push(r + ',' + c);
   }
-  return clearRows.length + clearCols.length;
+  for (let c = 0; c < BOARD_SIZE; c++) {
+    let full = true;
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      if (!grid[r][c]) { full = false; break; }
+    }
+    if (full) for (let r = 0; r < BOARD_SIZE; r++) cells.push(r + ',' + c);
+  }
+  for (let i = 0; i < cells.length; i++) {
+    const p = cells[i].split(',');
+    const cell = boardEl.querySelector('.cell[data-r="' + p[0] + '"][data-c="' + p[1] + '"]');
+    if (cell) cell.classList.add('clearing');
+  }
+}
+
+function applyClears() {
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    let full = true;
+    for (let c = 0; c < BOARD_SIZE; c++) {
+      if (!grid[r][c]) { full = false; break; }
+    }
+    if (full) grid[r] = new Array(BOARD_SIZE).fill(0);
+  }
+  for (let c = 0; c < BOARD_SIZE; c++) {
+    let full = true;
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      if (!grid[r][c]) { full = false; break; }
+    }
+    if (full) for (let r = 0; r < BOARD_SIZE; r++) grid[r][c] = 0;
+  }
 }
 
 function updateScore() {
   scoreValue.textContent = formatScore(score);
-  const best = getBestScore();
+  let best = getBestScore();
+  if ((best === null && score > 0) || (best !== null && score > best)) {
+    best = score;
+    try { localStorage.setItem(BEST_KEY, String(score)); } catch (e) {}
+    beatBest = true;
+  }
   bestValue.textContent = best !== null ? formatScore(best) : '--';
 }
 
@@ -1152,9 +1233,9 @@ function refillTray() {
 function checkGameOver() {
   if (hasAnyMove()) return;
   gameOver = true;
+  clearSave();
   let isNewRecord = false;
-  const best = getBestScore();
-  if (best === null || score > best) {
+  if (beatBest) {
     try { localStorage.setItem(BEST_KEY, String(score)); } catch (e) {}
     isNewRecord = true;
   }
@@ -1172,6 +1253,10 @@ function newGame() {
   score = 0;
   combo = 0;
   selected = -1;
+  beatBest = false;
+  if (clearTimer) { clearTimeout(clearTimer); clearTimer = null; }
+  clearing = false;
+  clearSave();
   initBoard();
   pieces = [];
   for (let i = 0; i < PIECE_COUNT; i++) pieces.push(randomPiece());
@@ -1187,23 +1272,16 @@ function showToast(msg) {
   toastEl._t = setTimeout(function() { toastEl.classList.remove('show'); }, 2200);
 }
 
-function renderRecords() {
-  const best = getBestScore();
-  recordsList.innerHTML = '<div class="record-row"><span class="record-diff">최고 점수</span><span class="record-time">' + (best !== null ? formatScore(best) : '--') + '</span></div>';
-}
-
 function closeAllModals() {
   modalGameOver.classList.remove('show');
   modalReset.classList.remove('show');
   modalRules.classList.remove('show');
-  modalRecords.classList.remove('show');
 }
 
 function modalOpen() {
   return modalGameOver.classList.contains('show') ||
          modalReset.classList.contains('show') ||
-         modalRules.classList.contains('show') ||
-         modalRecords.classList.contains('show');
+         modalRules.classList.contains('show');
 }
 
 function bindEvents() {
@@ -1231,11 +1309,6 @@ function bindEvents() {
     e.stopPropagation();
     modalRules.classList.add('show');
   });
-  btnRecords.addEventListener('click', function(e) {
-    e.stopPropagation();
-    renderRecords();
-    modalRecords.classList.add('show');
-  });
   btnCancelReset.addEventListener('click', function() {
     modalReset.classList.remove('show');
   });
@@ -1253,9 +1326,6 @@ function bindEvents() {
   btnCloseRules.addEventListener('click', function() {
     modalRules.classList.remove('show');
   });
-  btnCloseRecords.addEventListener('click', function() {
-    modalRecords.classList.remove('show');
-  });
 
   for (let i = 0; i < portalBtns.length; i++) {
     portalBtns[i].addEventListener('click', function() {
@@ -1267,13 +1337,18 @@ function bindEvents() {
     if (!e.target.closest('.modal')) {
       modalRules.classList.remove('show');
       modalReset.classList.remove('show');
-      modalRecords.classList.remove('show');
     }
   });
 }
 
 bindEvents();
-newGame();
+if (!restoreGame()) {
+  newGame();
+} else {
+  updateScore();
+  renderBoard();
+  renderTray();
+}
 })();
 </script>
 </body>

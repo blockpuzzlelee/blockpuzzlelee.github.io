@@ -310,7 +310,8 @@ body{
   border:2px solid var(--border);
   border-radius:var(--radius-lg);
   padding:var(--space-2);
-  cursor:pointer;
+  cursor:grab;
+  touch-action:none;
   transition:all var(--transition-base);
   -webkit-tap-highlight-color:transparent;
 }
@@ -344,6 +345,17 @@ body{
 }
 .piece-slot.selected .piece-cell.on{
   background:var(--primary-hover);
+}
+.piece-ghost{
+  position:fixed;
+  z-index:300;
+  pointer-events:none;
+  opacity:0.92;
+  will-change:left,top;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+}
+.piece-slot.dragging{
+  opacity:0.4;
 }
 
 /* ═══════════════════════════════════════
@@ -623,7 +635,7 @@ body{
 
 <div class="container">
   <header class="header">
-    <h1 class="logo">🧩 아빠의 블록 퍼즐</h1>
+    <h1 class="logo">아빠 아빠의 블록 퍼즐</h1>
     <div class="header-actions">
       <button class="header-btn" id="btnRecords" aria-label="최고 기록">기록</button>
       <button class="header-btn" id="btnRules" aria-label="규칙">규칙</button>
@@ -648,7 +660,7 @@ body{
   </div>
 
   <div class="controls">
-    <p class="hint">조각을 탭해서 선택하고, 보드에 놓을 칸을 탭하세요</p>
+    <p class="hint">조각을 누른 채 보드로 끌어다 놓으세요</p>
   </div>
 </div>
 
@@ -701,7 +713,7 @@ body{
     <div class="rules-content">
       <div class="rule-section">
         <h3>🧩 조각 놓기</h3>
-        <p>아래의 조각을 탭해서 선택하고, 보드의 놓을 칸을 탭하세요. 조각이 놓일 자리는 미리 파란색으로 보여요.</p>
+        <p>아래의 조각을 누른 채 보드로 끌어다 놓으세요. 조각이 놓일 자리는 미리 색으로 보여요. (조각을 탭해서 고른 뒤, 보드 칸을 탭해도 놓을 수 있어요)</p>
       </div>
       <div class="rule-section">
         <h3>✨ 줄 지우기</h3>
@@ -796,6 +808,9 @@ let score = 0;
 let combo = 0;
 let lastCombo = 0;
 let gameOver = false;
+let drag = null;
+let ghostEl = null;
+let suppressNextClick = false;
 
 const boardEl = document.getElementById('board');
 const trayEl = document.getElementById('tray');
@@ -944,6 +959,7 @@ function showPreview(piece, r, c) {
 
 function onBoardTap(r, c) {
   if (gameOver) return;
+  if (suppressNextClick) { suppressNextClick = false; return; }
   if (selected < 0 || !pieces[selected]) {
     clearPreview();
     return;
@@ -956,6 +972,103 @@ function onBoardTap(r, c) {
     return;
   }
   placePiece(selected, r, c);
+}
+
+function createGhost(i) {
+  const p = pieces[i];
+  const g = document.createElement('div');
+  g.className = 'piece-ghost';
+  const inner = document.createElement('div');
+  inner.className = 'piece-grid';
+  inner.style.gridTemplateColumns = 'repeat(' + p[0].length + ', 18px)';
+  for (let r = 0; r < p.length; r++) {
+    for (let c = 0; c < p[r].length; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'piece-cell' + (p[r][c] ? ' on' : '');
+      inner.appendChild(cell);
+    }
+  }
+  g.appendChild(inner);
+  document.body.appendChild(g);
+  ghostEl = g;
+}
+
+function removeGhost() {
+  if (ghostEl && ghostEl.parentNode) ghostEl.parentNode.removeChild(ghostEl);
+  ghostEl = null;
+}
+
+function dropPos(x, y) {
+  const piece = pieces[drag.idx];
+  const pw = piece[0].length * 18 + (piece[0].length - 1) * 3;
+  const ph = piece.length * 18 + (piece.length - 1) * 3;
+  const br = boardEl.getBoundingClientRect();
+  const cell = br.width / BOARD_SIZE;
+  const px = x - pw / 2;
+  const py = y - ph / 2;
+  if (px > br.right || py > br.bottom || px < br.left - pw || py < br.top - ph) return null;
+  let col = Math.floor((px - br.left) / cell);
+  let row = Math.floor((py - br.top) / cell);
+  col = Math.max(0, Math.min(col, BOARD_SIZE - piece[0].length));
+  row = Math.max(0, Math.min(row, BOARD_SIZE - piece.length));
+  return { r: row, c: col };
+}
+
+function startDrag(i, e) {
+  if (gameOver || !pieces[i]) return;
+  drag = { idx: i, startX: e.clientX, startY: e.clientY, moved: false };
+  try { slots[i].setPointerCapture(e.pointerId); } catch (err) {}
+}
+
+function updateDrag(e) {
+  if (!drag) return;
+  const x = e.clientX, y = e.clientY;
+  if (!drag.moved) {
+    if (Math.abs(x - drag.startX) < 6 && Math.abs(y - drag.startY) < 6) return;
+    drag.moved = true;
+    selected = drag.idx;
+    slots[drag.idx].classList.add('dragging');
+    createGhost(drag.idx);
+    renderTray();
+  }
+  ghostEl.style.left = (x - ghostEl.offsetWidth / 2) + 'px';
+  ghostEl.style.top = (y - ghostEl.offsetHeight / 2) + 'px';
+  const pos = dropPos(x, y);
+  if (pos) showPreview(pieces[drag.idx], pos.r, pos.c);
+  else clearPreview();
+}
+
+function endDrag(e) {
+  if (!drag) return;
+  const d = drag;
+  const piece = pieces[d.idx];
+  const pos = d.moved ? dropPos(e.clientX, e.clientY) : null;
+  drag = null;
+  removeGhost();
+  clearPreview();
+  slots[d.idx].classList.remove('dragging');
+  if (!d.moved) return;
+  suppressNextClick = true;
+  setTimeout(function() { suppressNextClick = false; }, 120);
+  if (!piece) { selected = -1; renderTray(); return; }
+  if (pos && canPlace(piece, pos.r, pos.c)) {
+    placePiece(d.idx, pos.r, pos.c);
+  } else {
+    selected = -1;
+    renderTray();
+    showToast('여기에는 놓을 수 없어요');
+  }
+}
+
+function cancelDrag() {
+  if (!drag) return;
+  const d = drag;
+  drag = null;
+  removeGhost();
+  clearPreview();
+  slots[d.idx].classList.remove('dragging');
+  selected = -1;
+  renderTray();
 }
 
 function placePiece(idx, r, c) {
@@ -1098,11 +1211,16 @@ function bindEvents() {
     slots[i].addEventListener('click', function(e) {
       e.stopPropagation();
       if (gameOver) return;
+      if (suppressNextClick) { suppressNextClick = false; return; }
       if (!pieces[i]) return;
       selected = (selected === i) ? -1 : i;
       clearPreview();
       renderTray();
     });
+    slots[i].addEventListener('pointerdown', function(e) { startDrag(i, e); });
+    slots[i].addEventListener('pointermove', function(e) { updateDrag(e); });
+    slots[i].addEventListener('pointerup', function(e) { endDrag(e); });
+    slots[i].addEventListener('pointercancel', function() { cancelDrag(); });
   }
 
   btnNewGame.addEventListener('click', function(e) {
